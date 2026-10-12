@@ -1,10 +1,15 @@
 EXTERN g_version:QWORD
+EXTERN init_version:PROC
 
 slot = 0
 
 stub MACRO name
 PUBLIC name
 name PROC
+  cmp qword ptr [g_version + 8 * slot], 0
+  jne @F
+  call init_version
+@@:
   jmp qword ptr [g_version + 8 * slot]
 name ENDP
 slot = slot + 1

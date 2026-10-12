@@ -113,6 +113,10 @@ __declspec(dllexport) void __cdecl NativeLoaderLog(const char *mod, const char *
 
 static DWORD WINAPI startup_worker(LPVOID param) {
   (void)param;
+  
+  // MOVED HERE: Load the real version.dll safely outside of DllMain
+  g_genuine_ok = load_genuine_version(); 
+
   wchar_t dir[MAX_PATH];
   wchar_t mods[MAX_PATH];
   if (!exe_dir(dir, MAX_PATH)) return 0;
@@ -131,6 +135,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
   (void)reserved;
   if (reason == DLL_PROCESS_ATTACH) {
 
+    // Pin the DLL in memory so the game can't unload it
     HMODULE hm;
     GetModuleHandleExW(
       GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
@@ -141,7 +146,9 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
     g_hinst = hinst;
     g_start_tick = GetTickCount64();
     DisableThreadLibraryCalls(hinst);
-    g_genuine_ok = load_genuine_version();
+    
+    // REMOVED FROM HERE: g_genuine_ok = load_genuine_version(); 
+    
     HANDLE t = CreateThread(NULL, 0, startup_worker, NULL, 0, NULL);
     if (t) CloseHandle(t);
   }
