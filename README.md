@@ -1,5 +1,8 @@
 # Native Loader
 
+Based on Ewan Howell's Native Loader. 
+This mod of NativeLoader allows other Native Mods to be installed alongside Native Loader.
+
 A native mod loader for Minecraft Dungeons II. It loads DLL mods into the game, gives them a debug console, and lets Blueprint mods call functions in them.
 
 Downloads, and the Native Mod Template for making mods, are NOT on [Nexus Mods](https://www.nexusmods.com/minecraftdungeons2/mods) yet.
