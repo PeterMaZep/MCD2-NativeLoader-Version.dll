@@ -11,7 +11,7 @@ static __inline HMODULE NativeLoaderModule(void) {
   DWORD n = GetModuleFileNameW(NULL, path, MAX_PATH);
   if (n == 0 || n >= MAX_PATH) return NULL;
   wchar_t *slash = wcsrchr(path, L'\\');
-  if (wcscpy_s(slash + 1, MAX_PATH - (slash + 1 - path), L"winmm.dll") != 0) return NULL;
+  if (wcscpy_s(slash + 1, MAX_PATH - (slash + 1 - path), L"version.dll") != 0) return NULL;
   return GetModuleHandleW(path);
 }
 

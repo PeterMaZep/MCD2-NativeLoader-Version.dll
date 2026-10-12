@@ -120,7 +120,7 @@ static DWORD WINAPI startup_worker(LPVOID param) {
     if (mods_dir(dir, MOD_FOLDERS[i], mods, MAX_PATH)) scan_mods(mods);
   }
   if (g_console_mods > 0) open_console();
-  if (!g_genuine_ok) nl_log("genuine System32 winmm FAILED to load");
+  if (!g_genuine_ok) nl_log("genuine System32 version.dll FAILED to load");
   bridge_register_builtins();
   load_mods();
   bridge_start();
@@ -133,7 +133,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
     g_hinst = hinst;
     g_start_tick = GetTickCount64();
     DisableThreadLibraryCalls(hinst);
-    g_genuine_ok = load_genuine_winmm();
+    g_genuine_ok = load_genuine_version();
     HANDLE t = CreateThread(NULL, 0, startup_worker, NULL, 0, NULL);
     if (t) CloseHandle(t);
   }

@@ -11,5 +11,5 @@ if not defined VS (
 call "%VS%\VC\Auxiliary\Build\vcvars64.bat" >nul
 :build
 if not exist obj mkdir obj
-ml64 /nologo /c /Fo obj\winmm_exports.obj winmm_exports.asm || exit /b 1
-cl /nologo /O2 /LD /MT /W3 /DUNICODE /D_UNICODE /Foobj\ winmm_proxy.c loader.c console.c engine.c bridge.c obj\winmm_exports.obj user32.lib gdi32.lib dwmapi.lib uxtheme.lib comdlg32.lib ole32.lib /Fe:winmm.dll /link /IMPLIB:obj\winmm.lib /MANIFEST:EMBED /MANIFESTDEPENDENCY:"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'" || exit /b 1
+ml64 /nologo /c /Fo obj\version_exports.obj version_exports.asm || exit /b 1
+cl /nologo /O2 /LD /MT /W3 /DUNICODE /D_UNICODE /Foobj\ version_proxy.c loader.c console.c engine.c bridge.c obj\version_exports.obj user32.lib gdi32.lib dwmapi.lib uxtheme.lib comdlg32.lib ole32.lib /Fe:version.dll /link /IMPLIB:obj\version.lib /MANIFEST:EMBED /MANIFESTDEPENDENCY:"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'" || exit /b 1
