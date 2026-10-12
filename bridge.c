@@ -9,7 +9,7 @@
 #define MAX_REG (128 + BUILTIN_COUNT)
 #define DISCOVERY_TRIES 240
 #define DISCOVERY_INTERVAL_MS 500
-#define NATIVELOADER_VERSION "1.2"
+#define NATIVELOADER_VERSION "1.3"
 
 typedef struct { char mod[64]; char name[64]; NativeBridgeFn fn; } Reg;
 
