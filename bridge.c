@@ -50,7 +50,7 @@ void bridge_register_builtins(void) {
 __declspec(dllexport) int __cdecl NativeLoaderRegister(const char *mod, const char *name, NativeBridgeFn fn) {
   if (!mod || !name || !fn) return 0;
   if (strlen(mod) >= sizeof(g_reg[0].mod) || strlen(name) >= sizeof(g_reg[0].name)) {
-    nl_log("bridge: FAILED to register %s/%s, mod and function names must be under %d bytes", mod, name, (int)sizeof(g_reg[0].name));
+    nl_mod_log(mod, "bridge: FAILED to register %s/%s, mod and function names must be under %d bytes", mod, name, (int)sizeof(g_reg[0].name));
     return 0;
   }
   if (_stricmp(mod, "NativeLoader") == 0) {
@@ -58,8 +58,8 @@ __declspec(dllexport) int __cdecl NativeLoaderRegister(const char *mod, const ch
     return 0;
   }
   int ok = add_function(mod, name, fn);
-  if (ok) nl_log("bridge: registered %s/%s", mod, name);
-  else nl_log("bridge: FAILED to register %s/%s, table full", mod, name);
+  if (ok) nl_mod_log(mod, "bridge: registered %s/%s", mod, name);
+  else nl_mod_log(mod, "bridge: FAILED to register %s/%s, table full", mod, name);
   return ok;
 }
 

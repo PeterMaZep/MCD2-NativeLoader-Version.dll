@@ -12,6 +12,7 @@ int load_genuine_winmm(void);
 void console_open(const wchar_t *title);
 void console_write(const wchar_t *prefix, const char *msg);
 void nl_log(const char *fmt, ...);
+void nl_mod_log(const char *mod, const char *fmt, ...);
 
 void bridge_register_builtins(void);
 void bridge_start(void);
