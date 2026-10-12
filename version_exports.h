@@ -1,7 +1,7 @@
 #pragma once
 
 // Must stay in the same order as the stubs in version_exports.asm
-#define version_EXPORTS(X) \
+#define VERSION_EXPORTS(X) \
   X(GetFileVersionInfoA, 1) \
   X(GetFileVersionInfoByHandle, 2) \
   X(GetFileVersionInfoExA, 3) \
