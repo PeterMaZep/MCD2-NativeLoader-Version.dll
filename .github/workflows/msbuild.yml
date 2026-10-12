@@ -1,0 +1,24 @@
+name: Build Native Loader
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Build DLL using build.bat
+      run: .\build.bat
+      shell: cmd
+
+    - name: Upload compiled version.dll
+      uses: actions/upload-artifact@v4
+      with:
+        name: version-dll
+        path: version.dll
