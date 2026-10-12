@@ -138,6 +138,11 @@ static DWORD WINAPI startup_worker(LPVOID param) {
   return 0;
 }
 
+static void start_worker(void) {
+  HANDLE t = CreateThread(NULL, 0, startup_worker, NULL, 0, NULL);
+  if (t) CloseHandle(t);
+}
+
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
   (void)reserved;
   if (reason == DLL_PROCESS_ATTACH) {
@@ -145,8 +150,7 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
     g_start_tick = GetTickCount64();
     DisableThreadLibraryCalls(hinst);
     g_genuine_ok = load_genuine_winmm();
-    HANDLE t = CreateThread(NULL, 0, startup_worker, NULL, 0, NULL);
-    if (t) CloseHandle(t);
+    defer_until_game_starts(start_worker);
   }
   return TRUE;
 }

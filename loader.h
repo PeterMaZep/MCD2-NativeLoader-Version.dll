@@ -8,6 +8,7 @@ extern ULONGLONG g_start_tick;
 int exe_dir(wchar_t *buf, size_t cch);
 
 int load_genuine_winmm(void);
+void defer_until_game_starts(void (*start)(void));
 
 void console_open(const wchar_t *title);
 void console_write(const wchar_t *prefix, const char *msg);
