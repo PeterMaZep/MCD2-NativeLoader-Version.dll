@@ -130,6 +130,14 @@ static DWORD WINAPI startup_worker(LPVOID param) {
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
   (void)reserved;
   if (reason == DLL_PROCESS_ATTACH) {
+
+    HMODULE hm;
+    GetModuleHandleExW(
+      GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+      (LPCWSTR)&DllMain,
+      &hm
+    );
+    
     g_hinst = hinst;
     g_start_tick = GetTickCount64();
     DisableThreadLibraryCalls(hinst);
