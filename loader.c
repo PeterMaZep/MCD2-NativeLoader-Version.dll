@@ -89,26 +89,37 @@ static void load_mods(void) {
     HMODULE h = LoadLibraryExW(m->dll, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     DWORD err = GetLastError();
     WideCharToMultiByte(CP_UTF8, 0, m->name, -1, name, sizeof(name), NULL, NULL);
-    if (h) {
-      loaded++;
-      nl_log("loaded %s", name);
-    } else {
-      nl_log("FAILED to load %s, err=%lu", name, (unsigned long)err);
-    }
+    if (h) loaded++;
+    if (!m->console) continue;
+    if (h) nl_log("loaded %s", name);
+    else nl_log("FAILED to load %s, err=%lu", name, (unsigned long)err);
   }
   nl_log("%d of %d DLL mods loaded", loaded, g_mod_count);
 }
 
-__declspec(dllexport) void __cdecl NativeLoaderLog(const char *mod, const char *message) {
-  if (!mod || !message) return;
+static Mod *console_mod(const char *mod) {
   wchar_t name[MAX_PATH];
-  if (!MultiByteToWideChar(CP_UTF8, 0, mod, -1, name, MAX_PATH)) return;
+  if (!mod || !MultiByteToWideChar(CP_UTF8, 0, mod, -1, name, MAX_PATH)) return NULL;
   for (int i = 0; i < g_mod_count; i++) {
-    if (g_mods[i].console && CompareStringOrdinal(g_mods[i].name, -1, name, -1, TRUE) == CSTR_EQUAL) {
-      console_write(g_console_mods == 1 ? NULL : g_mods[i].name, message);
-      break;
-    }
+    if (g_mods[i].console && CompareStringOrdinal(g_mods[i].name, -1, name, -1, TRUE) == CSTR_EQUAL) return &g_mods[i];
   }
+  return NULL;
+}
+
+void nl_mod_log(const char *mod, const char *fmt, ...) {
+  if (!console_mod(mod)) return;
+  char msg[1024];
+  va_list ap;
+  va_start(ap, fmt);
+  _vsnprintf_s(msg, sizeof(msg), _TRUNCATE, fmt, ap);
+  va_end(ap);
+  nl_log("%s", msg);
+}
+
+__declspec(dllexport) void __cdecl NativeLoaderLog(const char *mod, const char *message) {
+  if (!message) return;
+  Mod *m = console_mod(mod);
+  if (m) console_write(g_console_mods == 1 ? NULL : m->name, message);
 }
 
 static DWORD WINAPI startup_worker(LPVOID param) {
@@ -131,6 +142,11 @@ static DWORD WINAPI startup_worker(LPVOID param) {
   return 0;
 }
 
+static void start_worker(void) {
+  HANDLE t = CreateThread(NULL, 0, startup_worker, NULL, 0, NULL);
+  if (t) CloseHandle(t);
+}
+
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
   (void)reserved;
   if (reason == DLL_PROCESS_ATTACH) {
@@ -146,11 +162,8 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
     g_hinst = hinst;
     g_start_tick = GetTickCount64();
     DisableThreadLibraryCalls(hinst);
-    
-    // REMOVED FROM HERE: g_genuine_ok = load_genuine_version(); 
-    
-    HANDLE t = CreateThread(NULL, 0, startup_worker, NULL, 0, NULL);
-    if (t) CloseHandle(t);
+    g_genuine_ok = load_genuine_winmm();
+    defer_until_game_starts(start_worker);
   }
   return TRUE;
 }
